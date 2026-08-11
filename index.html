@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centripetal CRE — one record for the whole deal</title>
+<meta name="description" content="Centripetal CRE holds the whole deal on one record — a Deal Room that keeps it, a Tie-out that checks it, an Ask lane that answers from it, and Law Dog when it goes legal.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF8F2; --card:#FFFDF8; --ink:#231f1a; --muted:#6f675d;
+  --rule:#e4ddd0; --sage:#6B8E5A; --sage-soft:#eef3ea; --gold:#B89149;
+  --gold-soft:#f6efdf; --attn:#a8442f; --attn-soft:#f8eae7;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:'Fraunces',Georgia,serif;
+  font-variation-settings:'opsz' 14,'SOFT' 60;
+  font-weight:380; line-height:1.65; font-size:17px;
+  -webkit-font-smoothing:antialiased;
+}
+.eyebrow{
+  font-family:'IBM Plex Mono',ui-monospace,monospace;
+  font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--muted); font-weight:500;
+}
+.eyebrow .tick{color:var(--sage); margin-right:6px}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+a{color:inherit}
+.wrap{max-width:1100px; margin:0 auto; padding:0 28px}
+.pill{
+  display:inline-block; padding:4px 12px; border-radius:999px;
+  font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:11px;
+  letter-spacing:.05em; text-transform:uppercase;
+}
+.pill.attn{background:var(--attn-soft); color:var(--attn)}
+.pill.ok{background:var(--sage-soft); color:var(--sage)}
+.pill.gold{background:var(--gold-soft); color:var(--gold)}
+
+/* header */
+header{border-bottom:1px solid var(--rule); background:rgba(250,248,242,.92); position:sticky; top:0; z-index:20; backdrop-filter:blur(6px)}
+.nav{display:flex; align-items:center; justify-content:space-between; padding:18px 0}
+.wordmark{font-size:20px; font-weight:600; letter-spacing:-0.01em}
+.wordmark small{
+  font-family:'IBM Plex Mono',ui-monospace,monospace; font-weight:500;
+  font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--sage); margin-left:10px; vertical-align:2px;
+}
+.navlinks{display:flex; gap:24px; align-items:center}
+.navlinks a{font-size:15px; text-decoration:none; color:var(--muted)}
+.navlinks a:hover{color:var(--ink)}
+.btn{
+  display:inline-block; background:var(--sage); color:#fff; text-decoration:none;
+  padding:11px 22px; border-radius:8px; font-size:15px; font-weight:500;
+  border:1px solid var(--sage); transition:background .15s ease;
+}
+.btn:hover{background:#5d7d4e}
+.btn.ghost{background:transparent; color:var(--sage)}
+.btn.ghost:hover{background:var(--sage-soft)}
+.btn:focus-visible,.navlinks a:focus-visible,.room:focus-visible{outline:2px solid var(--gold); outline-offset:3px}
+
+/* hero */
+.hero{padding:80px 0 72px; border-bottom:1px solid var(--rule)}
+.hero-grid{display:grid; grid-template-columns:1.1fr .9fr; gap:64px; align-items:center}
+h1{
+  font-size:clamp(34px,4.6vw,54px); font-weight:560; line-height:1.12;
+  letter-spacing:-0.015em; margin:18px 0 20px;
+  font-variation-settings:'opsz' 90,'SOFT' 40;
+}
+h1 em{font-style:italic; color:var(--sage); font-variation-settings:'opsz' 90,'SOFT' 100}
+.lede{font-size:18.5px; color:var(--muted); max-width:540px; line-height:1.7}
+.hero-ctas{margin-top:32px; display:flex; gap:14px; flex-wrap:wrap}
+
+/* hero: the four rooms */
+.rooms{display:grid; gap:12px}
+.room{
+  display:flex; justify-content:space-between; align-items:center; gap:18px;
+  background:var(--card); border:1px solid var(--rule); border-radius:11px;
+  padding:18px 22px; text-decoration:none;
+  transition:border-color .15s ease, transform .15s ease;
+}
+.room:hover{border-color:var(--sage); transform:translateX(3px)}
+.room .rt{font-weight:560; font-size:16.5px}
+.room .rs{font-size:13.5px; color:var(--muted); margin-top:2px; line-height:1.5}
+.room .rn{
+  font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:11px;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--sage); flex-shrink:0;
+}
+@media (prefers-reduced-motion: reduce){ .room{transition:none} .room:hover{transform:none} }
+
+/* statement check card (signature — lives in Tie-out) */
+.stmt{
+  background:var(--card); border:1px solid var(--rule); border-radius:12px;
+  padding:28px 30px; box-shadow:0 1px 2px rgba(35,31,26,.04), 0 12px 32px rgba(35,31,26,.05);
+}
+.stmt .head{display:flex; justify-content:space-between; align-items:baseline; border-bottom:1px solid var(--rule); padding-bottom:14px; margin-bottom:6px}
+.stmt .head .t{font-weight:560; font-size:16px}
+.stmt-line{
+  display:flex; justify-content:space-between; padding:10px 0;
+  border-bottom:1px solid var(--rule); font-size:15px;
+  opacity:0; transform:translateY(6px); transition:opacity .45s ease, transform .45s ease;
+}
+.stmt-line.show{opacity:1; transform:none}
+.stmt-line .lbl{color:var(--muted)}
+.stmt-line .amt{font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:14px}
+.stmt-line.computed{border-bottom:none; padding-top:14px}
+.stmt-line.computed .lbl,.stmt-line.computed .amt{font-weight:600; color:var(--ink)}
+.stmt-line.stated .amt{color:var(--muted)}
+.stmt-gap{
+  margin-top:14px; padding:13px 16px; border-radius:9px; background:var(--attn-soft);
+  display:flex; justify-content:space-between; align-items:center;
+  opacity:0; transform:translateY(6px); transition:opacity .5s ease .1s, transform .5s ease .1s;
+}
+.stmt-gap.show{opacity:1; transform:none}
+.stmt-gap .g{font-size:14.5px; color:var(--attn); font-weight:500}
+.stmt-note{margin-top:14px; font-size:12.5px; color:var(--muted); font-style:italic}
+@media (prefers-reduced-motion: reduce){
+  .stmt-line,.stmt-gap{opacity:1 !important; transform:none !important; transition:none}
+}
+
+/* sections */
+section{padding:78px 0; border-bottom:1px solid var(--rule)}
+h2{
+  font-size:clamp(26px,3.2vw,36px); font-weight:560; line-height:1.2;
+  letter-spacing:-0.01em; margin:14px 0 16px;
+  font-variation-settings:'opsz' 72,'SOFT' 40;
+}
+.sec-lede{font-size:17.5px; color:var(--muted); max-width:640px; line-height:1.7}
+.two-col{display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center}
+
+/* card grids */
+.watch-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:44px}
+.watch-card{background:var(--card); border:1px solid var(--rule); border-radius:11px; padding:24px 24px 26px}
+.watch-card .wt{font-weight:560; font-size:16.5px; margin:10px 0 8px}
+.watch-card p{font-size:14.5px; color:var(--muted); line-height:1.65}
+
+/* findings */
+.finding{
+  border:1px solid var(--rule); border-left:3px solid var(--gold); border-radius:10px;
+  background:var(--paper); padding:22px 24px;
+}
+.finding .fh{display:flex; justify-content:space-between; align-items:center; margin-bottom:8px}
+.finding .ft{font-weight:560; font-size:15.5px}
+.finding p{font-size:14.5px; color:var(--muted)}
+.finding + .finding{margin-top:12px}
+.illus{font-size:12.5px; color:var(--muted); font-style:italic; margin-top:14px}
+.band{background:var(--card)}
+
+/* ask */
+.qa{
+  background:var(--card); border:1px solid var(--rule); border-radius:12px; overflow:hidden;
+  box-shadow:0 1px 2px rgba(35,31,26,.04), 0 12px 32px rgba(35,31,26,.05);
+}
+.qa .q{
+  padding:20px 24px; border-bottom:1px solid var(--rule); font-style:italic;
+  font-size:16.5px; font-variation-settings:'opsz' 30,'SOFT' 90;
+}
+.qa .q .who{font-style:normal}
+.qa .a{padding:20px 24px}
+.qa .a p{font-size:14.5px; color:var(--muted); line-height:1.7}
+.qa .a .figs{
+  margin-top:12px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;
+}
+.qa .fig{background:var(--paper); border:1px solid var(--rule); border-radius:8px; padding:12px 14px}
+.qa .fig .fl{font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.qa .fig .fv{font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:16px; font-weight:500; margin-top:4px}
+.qa-honest{
+  margin-top:18px; border:1px solid var(--rule); border-radius:10px;
+  background:var(--sage-soft); padding:18px 20px; font-size:14.5px; line-height:1.65; color:#3f5535;
+}
+.qa-honest b{font-weight:600}
+.ask-samples{margin-top:24px; display:grid; gap:10px}
+.ask-sample{
+  font-style:italic; color:var(--muted); font-size:15.5px; padding-left:18px;
+  border-left:2px solid var(--gold); line-height:1.6;
+}
+
+/* law dog */
+.ld-grid{display:grid; grid-template-columns:.95fr 1.05fr; gap:60px; align-items:start; margin-top:10px}
+.avr{
+  background:var(--card); border:1px solid var(--rule); border-radius:12px; overflow:hidden;
+  box-shadow:0 1px 2px rgba(35,31,26,.04), 0 12px 32px rgba(35,31,26,.05);
+}
+.avr .avr-head{padding:16px 22px; border-bottom:1px solid var(--rule); display:flex; justify-content:space-between; align-items:center}
+.avr .avr-head .t{font-weight:560; font-size:15px}
+.avr-row{display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid var(--rule)}
+.avr-row:last-child{border-bottom:none}
+.avr-cell{padding:16px 22px; font-size:14px; line-height:1.6}
+.avr-cell.claim{color:var(--muted); border-right:1px solid var(--rule)}
+.avr-cell .cl{font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); display:block; margin-bottom:6px}
+.avr-cell.record .cl{color:var(--sage)}
+.ld-points{margin-top:26px; display:grid; gap:14px}
+.ld-point{display:flex; gap:14px; align-items:flex-start}
+.ld-point .m{color:var(--sage); font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:13px; padding-top:3px}
+.ld-point p{font-size:15px; color:var(--muted); line-height:1.65}
+.ld-point p b{color:var(--ink); font-weight:560}
+
+/* one record */
+.spine{display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center}
+.spine-fig{
+  background:var(--card); border:1px solid var(--rule); border-radius:12px; padding:30px;
+  display:flex; flex-direction:column; gap:0; align-items:center; text-align:center;
+}
+.spine-node{
+  border:1px solid var(--rule); border-radius:10px; padding:14px 22px; width:100%;
+  background:var(--paper);
+}
+.spine-node .nt{font-weight:560; font-size:15px}
+.spine-node .ns{font-size:13px; color:var(--muted); margin-top:2px}
+.spine-join{
+  font-family:'IBM Plex Mono',ui-monospace,monospace; font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--gold); padding:12px 0;
+}
+.spine-base{
+  border:1px solid var(--sage); border-radius:10px; padding:14px 22px; width:100%;
+  background:var(--sage-soft);
+}
+.spine-base .nt{font-weight:600; font-size:15px; color:#3f5535}
+.spine-base .ns{font-size:13px; color:#5a7350; margin-top:2px}
+
+/* who */
+.who-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:40px}
+.who-card{background:var(--card); border:1px solid var(--rule); border-radius:11px; padding:26px}
+.who-card .wt{font-weight:560; font-size:17px; margin:8px 0 10px}
+.who-card p{font-size:14.5px; color:var(--muted); line-height:1.65}
+
+/* closing */
+.closing{border-bottom:none; padding-bottom:60px}
+.founder{max-width:680px; margin:0 auto; text-align:center}
+.founder blockquote{
+  font-size:clamp(20px,2.6vw,26px); font-weight:420; line-height:1.5;
+  font-variation-settings:'opsz' 40,'SOFT' 80; font-style:italic; color:var(--ink);
+}
+.founder .sig{margin-top:18px; font-size:15px; color:var(--muted)}
+.founder .cta{margin-top:34px}
+footer{padding:26px 0 40px; color:var(--muted); font-size:13.5px}
+.footrow{display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--rule); padding-top:22px; flex-wrap:wrap; gap:10px}
+
+/* responsive */
+@media (max-width:880px){
+  .hero-grid,.two-col,.ld-grid,.spine{grid-template-columns:1fr; gap:40px}
+  .watch-grid{grid-template-columns:1fr 1fr}
+  .who-grid{grid-template-columns:1fr}
+  .qa .a .figs{grid-template-columns:1fr}
+  .navlinks a:not(.btn){display:none}
+  section{padding:60px 0}
+  .hero{padding:56px 0}
+}
+@media (max-width:560px){
+  .watch-grid{grid-template-columns:1fr}
+  body{font-size:16px}
+}
+</style>
+
+<!-- ── Telemetry (mineral-template trio: byte-faithful with the apex/mineral/retail/corporate surfaces) ── -->
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-86S8R140PV"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-86S8R140PV');
+</script>
+<!-- RB2B visitor de-anonymization (feeds the lead_accounts / rb2b_company_id pipeline) -->
+<script>
+  !function () {var reb2b = window.reb2b = window.reb2b || [];
+  if (reb2b.invoked) return;reb2b.invoked = true;reb2b.methods = ["identify", "collect"];
+  reb2b.factory = function (method) {return function () {var args = Array.prototype.slice.call(arguments);
+  args.unshift(method);reb2b.push(args);return reb2b;};};
+  for (var i = 0; i < reb2b.methods.length; i++) {var key = reb2b.methods[i];reb2b[key] = reb2b.factory(key);}
+  reb2b.load = function (key) {var script = document.createElement("script");script.type = "text/javascript";script.async = true;
+  script.src = "https://s3-us-west-2.amazonaws.com/b2bjsstore/b/" + key + "/reb2b.js.gz";
+  var first = document.getElementsByTagName("script")[0];first.parentNode.insertBefore(script, first);};
+  reb2b.SNIPPET_VERSION = "1.0.1";reb2b.load("46DJ4HGGJM61");}();
+</script>
+<!-- PostHog product analytics (project 403760) -->
+<script>
+  !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+  posthog.init('phc_placeholder_cre_site_key',{api_host:'https://us.i.posthog.com'});
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="wordmark">Centripetal<small>Commercial Real Estate</small></div>
+    <nav class="navlinks">
+      <a href="#dealroom">Deal room</a>
+      <a href="#tieout">Tie-out</a>
+      <a href="#ask">Ask</a>
+      <a href="#lawdog">Law Dog</a>
+      <a href="#contact" class="btn ghost">Request a walkthrough</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<div class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow"><span class="tick">✓</span>One record for the whole deal</div>
+      <h1>Your deal lives in six places.<br>It should live in <em>one.</em></h1>
+      <p class="lede">The offering memo is a PDF, the waterfall is a spreadsheet, the leases are in a drawer, the statements arrive by email, and the legal file is at the firm. Centripetal puts the whole deal on one record — a room that keeps it, a tie-out that checks it, an ask lane that answers from it, and a legal side ready if it ever comes to that.</p>
+      <div class="hero-ctas">
+        <a href="#contact" class="btn">See it on your own deal</a>
+      </div>
+    </div>
+
+    <div class="rooms" aria-label="The four parts of Centripetal CRE">
+      <a class="room" href="#dealroom">
+        <div><div class="rt">The Deal Room</div><div class="rs">Properties, leases, partners, distributions — the record itself.</div></div>
+        <span class="rn">Keep</span>
+      </a>
+      <a class="room" href="#tieout">
+        <div><div class="rt">Tie-out</div><div class="rs">Six standing checks that re-compute everything, every month.</div></div>
+        <span class="rn">Check</span>
+      </a>
+      <a class="room" href="#ask">
+        <div><div class="rt">Ask</div><div class="rs">Question in plain English, answer computed from the record.</div></div>
+        <span class="rn">Answer</span>
+      </a>
+      <a class="room" href="#lawdog">
+        <div><div class="rt">Law Dog</div><div class="rs">When the deal goes legal, the matter runs on the same record.</div></div>
+        <span class="rn">Defend</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<section id="dealroom">
+  <div class="wrap">
+    <div class="eyebrow"><span class="tick">✓</span>The Deal Room · Keep</div>
+    <h2>The record itself — every surface<br>of the deal, on one screen.</h2>
+    <p class="sec-lede">Everything else in Centripetal reads from here. If it isn't in the Deal Room, it isn't in the deal.</p>
+    <div class="watch-grid">
+      <div class="watch-card">
+        <span class="pill ok">Overview</span>
+        <div class="wt">The deal at a glance</div>
+        <p>Purchase price, equity, preference rate, properties, and what's been distributed to date — the numbers every partner call starts with, already on one screen.</p>
+      </div>
+      <div class="watch-card">
+        <span class="pill ok">Properties</span>
+        <div class="wt">On a real map</div>
+        <p>Every property with its street address — and a pin on the map only when the location is certain. If we don't know exactly where something sits, we say so instead of decorating.</p>
+      </div>
+      <div class="watch-card">
+        <span class="pill ok">Leases & ledger</span>
+        <div class="wt">The sources the math reads</div>
+        <p>Every lease with its shares, caps, and true-up terms. Every distribution dated and memoed. Everything downstream computes from these — so any finding traces back to its line.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tieout" class="band">
+  <div class="wrap">
+    <div class="two-col">
+      <div>
+        <div class="eyebrow"><span class="tick">✓</span>Tie-out · Check</div>
+        <h2>Six checks that run every month, whether or not anyone asks.</h2>
+        <p class="sec-lede">Tie-out is the auditor's word for making the numbers agree with their own sources. Ours runs standing — every statement re-added, every charge re-computed, every month. The expensive mistakes live in the questions nobody asks, so this part doesn't wait to be asked.</p>
+      </div>
+      <div class="stmt" id="stmtCard" aria-label="Example owner statement being re-computed">
+        <div class="head">
+          <span class="t">Owner statement · June</span>
+          <span class="eyebrow">Re-computed</span>
+        </div>
+        <div class="stmt-line"><span class="lbl">Rental income</span><span class="amt">$48,250</span></div>
+        <div class="stmt-line"><span class="lbl">Operating expenses</span><span class="amt">− $19,780</span></div>
+        <div class="stmt-line"><span class="lbl">Management fee</span><span class="amt">− $2,412</span></div>
+        <div class="stmt-line computed"><span class="lbl">Computed net</span><span class="amt">$26,058</span></div>
+        <div class="stmt-line stated"><span class="lbl">Statement says</span><span class="amt">$25,558</span></div>
+        <div class="stmt-gap">
+          <span class="g">$500 doesn't foot</span>
+          <span class="pill attn">Needs attention</span>
+        </div>
+        <div class="stmt-note">Illustrative — drawn from a model portfolio, not a client.</div>
+      </div>
+    </div>
+
+    <div class="watch-grid">
+      <div class="watch-card">
+        <span class="pill ok">Promise vs. reality</span>
+        <div class="wt">Offering memo against actuals</div>
+        <p>What the deal promised at closing, line by line, against what the property is actually doing. Every gap gets a verdict, not a shrug.</p>
+      </div>
+      <div class="watch-card">
+        <span class="pill ok">Who's owed what</span>
+        <div class="wt">Waterfall state</div>
+        <p>Who has been paid, what preference has accrued to today, and what's still owed before the splits turn on — per partner, per tier.</p>
+      </div>
+      <div class="watch-card">
+        <span class="pill ok">When splits arrive</span>
+        <div class="wt">Distribution timing</div>
+        <p>At today's pace, when the deal reaches its next phase — computed on the memo's numbers and on the real ones, side by side.</p>
+      </div>
+      <div class="watch-card">
+        <span class="pill ok">Tenant charges</span>
+        <div class="wt">CAM reconciliation</div>
+        <p>Every tenant's share of common-area costs re-computed against caps and true-ups. Over-billings surface on their own — in either direction.</p>
+      </div>
+      <div class="watch-card">
+        <span class="pill ok">The re-add</span>
+        <div class="wt">Statement integrity</div>
+        <p>Every owner statement re-added from its own lines. The stated distribution checked against the money that actually moved.</p>
+      </div>
+      <div class="watch-card">
+        <span class="pill ok">Adds to 100</span>
+        <div class="wt">Ownership shares</div>
+        <p>Pro-rata percentages that must total a hundred actually do. A small thing — until the month it isn't.</p>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-top:56px">
+      <div>
+        <h2 style="font-size:clamp(22px,2.6vw,28px)">The findings nobody requested.</h2>
+        <p class="sec-lede">In one model portfolio review, the tie-out surfaced two things on its own — sitting in documents everyone had already read. Nobody typed a question. That's the difference between software you use and a record that watches itself.</p>
+      </div>
+      <div>
+        <div class="finding">
+          <div class="fh"><span class="ft">Statement gap</span><span class="pill attn">$500</span></div>
+          <p>A monthly statement whose stated net didn't match its own lines. Small enough to miss forever. Found on the first pass.</p>
+        </div>
+        <div class="finding">
+          <div class="fh"><span class="ft">CAM over-billing</span><span class="pill attn">$3,740</span></div>
+          <p>A tenant's true-up billed past its cap. The lease said one thing; the invoice said another. The re-computation said so.</p>
+        </div>
+        <div class="illus">Both from a model portfolio — illustrative of what the checks catch, not client results.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="ask">
+  <div class="wrap">
+    <div class="two-col" style="align-items:start">
+      <div>
+        <div class="eyebrow"><span class="tick">✓</span>Ask · Answer</div>
+        <h2>Ask the deal a question.<br>Get an answer, not a search result.</h2>
+        <p class="sec-lede">Questions in plain English; answers computed from the record itself — with the lines they came from, so you can check the checker.</p>
+        <div class="ask-samples">
+          <div class="ask-sample">"What's still owed to the Class B members before the promote turns on?"</div>
+          <div class="ask-sample">"Which tenants are over their CAM cap this year?"</div>
+          <div class="ask-sample">"How far is rental income running from what the memo projected?"</div>
+        </div>
+        <div class="qa-honest"><b>And when the record doesn't hold the answer, it says so.</b> Ask never guesses, never fills a gap with a plausible number, and never dresses an estimate up as a fact. An honest "the record doesn't show that yet" beats a confident wrong answer every time.</div>
+      </div>
+      <div class="qa" aria-label="Example question and computed answer">
+        <div class="q"><span class="who eyebrow" style="display:block;margin-bottom:8px">You ask</span>"At today's pace, when do the splits turn on?"</div>
+        <div class="a">
+          <span class="eyebrow" style="display:block;margin-bottom:10px">The record answers</span>
+          <p>Preference is accruing faster than distributions are covering it at the memo's projected pace — but on the trailing actual pace, coverage crosses over next spring. Both computations shown, side by side:</p>
+          <div class="figs">
+            <div class="fig"><div class="fl">Pref accrued</div><div class="fv">$212,400</div></div>
+            <div class="fig"><div class="fl">Memo pace</div><div class="fv">14 mo</div></div>
+            <div class="fig"><div class="fl">Actual pace</div><div class="fv">9 mo</div></div>
+          </div>
+          <div class="stmt-note">Illustrative — a model deal, shown to demonstrate the shape of an answer.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="lawdog">
+  <div class="wrap">
+    <div class="eyebrow"><span class="tick">✓</span>Law Dog · Defend</div>
+    <h2>Most real estate disputes are a division<br>of holdings wearing legal paper.</h2>
+    <p class="sec-lede">A membership separation, a partnership dispute, a lease fight — underneath the pleadings, it's the same properties, the same waterfall, the same money. Law Dog holds the matter; the Deal Room holds the numbers; both read from one record.</p>
+
+    <div class="ld-grid">
+      <div>
+        <div class="ld-points">
+          <div class="ld-point"><span class="m">✓</span><p><b>The whole matter, one workspace.</b> Claims, timeline, exhibits, discovery, tasks, and the answer clock — organized the way the case actually moves, readable by the people who need it.</p></div>
+          <div class="ld-point"><span class="m">✓</span><p><b>Every allegation, set against the record.</b> Each claim made against you sits beside what the record actually shows, with its disposition. Arguments are easier to win when the receipts are already paired.</p></div>
+          <div class="ld-point"><span class="m">✓</span><p><b>Deadlines that can't hide.</b> Answer dates and discovery clocks on the header of the matter itself — not buried in someone's calendar.</p></div>
+          <div class="ld-point"><span class="m">✓</span><p><b>Your firm's wall.</b> Each firm and each partnership lives behind its own wall, enforced at the data layer. What's yours is visible to your people and no one else.</p></div>
+          <div class="ld-point"><span class="m">✓</span><p><b>Ask works here too.</b> Question the matter and the answer draws only from the matter's own record — it never invents a citation and never speculates about what a court will do.</p></div>
+        </div>
+      </div>
+
+      <div class="avr" aria-label="Example of an allegation set against the record">
+        <div class="avr-head">
+          <span class="t">Allegations vs. the record</span>
+          <span class="eyebrow">Example</span>
+        </div>
+        <div class="avr-row">
+          <div class="avr-cell claim"><span class="cl">The allegation</span>"Distributions were withheld from the departing member for three quarters."</div>
+          <div class="avr-cell record"><span class="cl">The record</span>Distribution ledger shows quarterly payments received on schedule, each acknowledged in writing. <span class="pill ok">Contradicted</span></div>
+        </div>
+        <div class="avr-row">
+          <div class="avr-cell claim"><span class="cl">The allegation</span>"The management fee exceeded what the operating agreement allows."</div>
+          <div class="avr-cell record"><span class="cl">The record</span>Fee re-computed against the agreement's own formula for every month in dispute. Two months ran high. <span class="pill gold">Partly supported</span></div>
+        </div>
+        <div class="avr-row">
+          <div class="avr-cell claim"><span class="cl">The allegation</span>"The buyout price ignored the newest lease."</div>
+          <div class="avr-cell record"><span class="cl">The record</span>Valuation exhibit predates the lease by six weeks. Timeline entry pairs both documents. <span class="pill attn">Needs review</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap spine">
+    <div>
+      <div class="eyebrow"><span class="tick">✓</span>One record</div>
+      <h2>Your attorney and your accountant, finally looking at the same thing.</h2>
+      <p class="sec-lede">The matter and the money share one spine — the same deal, the same partners, the same access wall. When counsel asks what the waterfall actually says, the answer isn't a spreadsheet someone emails around. It's the record itself.</p>
+    </div>
+    <div class="spine-fig" aria-label="Diagram: the legal matter and the deal numbers share one record">
+      <div class="spine-node"><div class="nt">Law Dog</div><div class="ns">The matter — claims, exhibits, discovery, deadlines</div></div>
+      <div class="spine-join">— one record —</div>
+      <div class="spine-node"><div class="nt">Deal Room · Tie-out · Ask</div><div class="ns">The money — kept, checked, and answerable</div></div>
+      <div class="spine-join">— one wall —</div>
+      <div class="spine-base"><div class="nt">Your deal</div><div class="ns">Same properties · same partners · same truth</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="who">
+  <div class="wrap">
+    <div class="eyebrow"><span class="tick">✓</span>Who it's for</div>
+    <h2>Built for the people the numbers answer to.</h2>
+    <div class="who-grid">
+      <div class="who-card">
+        <span class="pill ok">Operators & GPs</span>
+        <div class="wt">Walk in already audited.</div>
+        <p>Partner meetings go differently when every statement has survived its own re-computation before anyone else sees it. Surprises become memos, not confrontations.</p>
+      </div>
+      <div class="who-card">
+        <span class="pill ok">Partners & LPs</span>
+        <div class="wt">See where preference stands.</div>
+        <p>What you've received, what's accrued, what's still owed before splits — without asking for a spreadsheet or trusting one you can't check.</p>
+      </div>
+      <div class="who-card">
+        <span class="pill ok">Counsel</span>
+        <div class="wt">The record is the workspace.</div>
+        <p>When the dispute is about the money, the money is right there — re-computed, dated, and paired against each allegation. Discovery starts from the receipts.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="closing" id="contact">
+  <div class="wrap founder">
+    <div class="eyebrow"><span class="tick">✓</span>From the desk</div>
+    <blockquote>"I built this because I watched good partners get bad statements and not know it. The math isn't hard. It just has to be run every month, on everything, whether or not anyone asks."</blockquote>
+    <div class="sig">— Dave, founder</div>
+    <div class="cta">
+      <a href="#contact" class="btn" id="ctaBtn">Request a walkthrough</a>
+      <p style="margin-top:14px;font-size:14px;color:var(--muted)">Bring one deal. We'll load it and run the tie-out — you'll know within a week whether your statements hold.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap footrow">
+    <span>© 2026 Centripetal AI · Fort Worth, Texas</span>
+    <span class="mono" style="font-size:11px;letter-spacing:.12em;text-transform:uppercase">Deal Room · Tie-out · Ask · Law Dog</span>
+  </div>
+</footer>
+
+<!-- ── Ask Centripetal · concierge chat surface ── -->
+<button id="askLauncher" aria-label="Ask Centripetal a question" aria-expanded="false">
+  <span class="al-dot"></span>Ask Centripetal
+</button>
+
+<div id="askPanel" role="dialog" aria-label="Ask Centripetal" aria-modal="false" hidden>
+  <div class="ask-head">
+    <div>
+      <div class="ask-title">Ask Centripetal</div>
+      <div class="ask-sub">Questions about the deal, the tie-out, or a walkthrough</div>
+    </div>
+    <button id="askClose" aria-label="Close">×</button>
+  </div>
+  <div class="ask-log" id="askLog" aria-live="polite">
+    <div class="msg bot">Hi — I can explain how Centripetal keeps your whole deal on one record, what the tie-out checks each month, or set up a walkthrough on your own numbers. What's on your mind?</div>
+  </div>
+  <div class="ask-chips" id="askChips">
+    <button class="chip" data-q="What does the tie-out actually check?">What does the tie-out check?</button>
+    <button class="chip" data-q="How does this help with a partnership dispute?">Partnership disputes?</button>
+    <button class="chip" data-q="I'd like a walkthrough on my own deal.">Book a walkthrough</button>
+  </div>
+  <form class="ask-input" id="askForm" autocomplete="off">
+    <input id="askText" type="text" placeholder="Type your question…" aria-label="Your question" />
+    <button type="submit" aria-label="Send">Send</button>
+  </form>
+  <div class="ask-foot">Answers are drawn from what Centripetal publicly offers. For anything about a specific deal, we'll set up a walkthrough.</div>
+</div>
+
+<style>
+#askLauncher{
+  position:fixed; right:22px; bottom:22px; z-index:60;
+  display:flex; align-items:center; gap:9px;
+  background:var(--sage); color:#fff; border:1px solid var(--sage);
+  padding:13px 20px; border-radius:999px; cursor:pointer;
+  font-family:'Fraunces',Georgia,serif; font-size:15px; font-weight:500;
+  box-shadow:0 6px 24px rgba(35,31,26,.16); transition:background .15s ease, transform .15s ease;
+}
+#askLauncher:hover{background:#5d7d4e; transform:translateY(-1px)}
+#askLauncher:focus-visible,#askClose:focus-visible,.chip:focus-visible,.ask-input button:focus-visible,.ask-input input:focus-visible{outline:2px solid var(--gold); outline-offset:2px}
+.al-dot{width:8px; height:8px; border-radius:50%; background:#fff; box-shadow:0 0 0 4px rgba(255,255,255,.28)}
+#askPanel{
+  position:fixed; right:22px; bottom:22px; z-index:61; width:380px; max-width:calc(100vw - 32px);
+  background:var(--card); border:1px solid var(--rule); border-radius:16px; overflow:hidden;
+  box-shadow:0 12px 48px rgba(35,31,26,.22); display:flex; flex-direction:column;
+  max-height:min(620px, calc(100vh - 44px));
+}
+#askPanel[hidden]{display:none}
+.ask-head{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding:18px 20px; border-bottom:1px solid var(--rule); background:var(--sage-soft)}
+.ask-title{font-weight:600; font-size:16px; color:#3f5535}
+.ask-sub{font-size:12.5px; color:#5a7350; margin-top:2px; line-height:1.45}
+#askClose{border:0; background:none; font-size:24px; line-height:1; color:#5a7350; cursor:pointer; padding:0 2px}
+.ask-log{flex:1; overflow-y:auto; padding:18px 20px; display:flex; flex-direction:column; gap:12px}
+.msg{font-size:14.5px; line-height:1.6; padding:11px 14px; border-radius:12px; max-width:88%}
+.msg.bot{background:var(--paper); border:1px solid var(--rule); align-self:flex-start; border-bottom-left-radius:4px}
+.msg.you{background:var(--sage); color:#fff; align-self:flex-end; border-bottom-right-radius:4px}
+.msg.bot.typing{color:var(--muted); font-style:italic}
+.ask-chips{display:flex; flex-wrap:wrap; gap:8px; padding:0 20px 12px}
+.chip{
+  border:1px solid var(--rule); background:var(--paper); color:var(--muted);
+  border-radius:999px; padding:7px 13px; font-size:13px; cursor:pointer;
+  font-family:'IBM Plex Mono',ui-monospace,monospace; transition:border-color .15s ease, color .15s ease;
+}
+.chip:hover{border-color:var(--sage); color:var(--ink)}
+.ask-input{display:flex; gap:8px; padding:14px 16px; border-top:1px solid var(--rule)}
+.ask-input input{flex:1; border:1px solid var(--rule); border-radius:9px; padding:11px 13px; font:inherit; font-size:14.5px; background:var(--paper); color:var(--ink)}
+.ask-input button{border:1px solid var(--sage); background:var(--sage); color:#fff; border-radius:9px; padding:0 18px; font:inherit; font-size:14px; font-weight:500; cursor:pointer}
+.ask-input button:hover{background:#5d7d4e}
+.ask-foot{padding:0 20px 16px; font-size:11.5px; color:var(--muted); line-height:1.5}
+@media (prefers-reduced-motion: reduce){ #askLauncher{transition:none} #askLauncher:hover{transform:none} }
+@media (max-width:560px){ #askPanel{right:8px; left:8px; bottom:8px; width:auto; max-height:calc(100vh - 16px)} #askLauncher{right:12px; bottom:12px} }
+</style>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var card = document.getElementById('stmtCard');
+  if(!card) return;
+  var lines = card.querySelectorAll('.stmt-line');
+  var gap = card.querySelector('.stmt-gap');
+  function reveal(){
+    lines.forEach(function(l,i){
+      setTimeout(function(){ l.classList.add('show'); }, reduced ? 0 : 260*i + 200);
+    });
+    setTimeout(function(){ gap.classList.add('show'); }, reduced ? 0 : 260*lines.length + 500);
+  }
+  if(reduced){ reveal(); return; }
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ reveal(); io.disconnect(); } });
+    }, {threshold:.35});
+    io.observe(card);
+  } else { reveal(); }
+})();
+
+// Walkthrough-request intent — fires into GA4 + PostHog so a hot visitor
+// surfaces in the funnel-to-CRM queue. Actual contact route is wired on deploy.
+(function(){
+  var btns = document.querySelectorAll('#ctaBtn, .hero-ctas .btn, .navlinks .btn');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      try { if(window.gtag) gtag('event','walkthrough_request',{surface:'cre',section:'contact'}); } catch(e){}
+      try { if(window.posthog) posthog.capture('walkthrough_request',{surface:'cre'}); } catch(e){}
+    });
+  });
+})();
+
+// ── Ask Centripetal concierge ──
+(function(){
+  var launcher=document.getElementById('askLauncher'),
+      panel=document.getElementById('askPanel'),
+      closeBtn=document.getElementById('askClose'),
+      log=document.getElementById('askLog'),
+      form=document.getElementById('askForm'),
+      text=document.getElementById('askText'),
+      chips=document.getElementById('askChips');
+  if(!launcher||!panel) return;
+
+  function open(){ panel.hidden=false; launcher.hidden=true; launcher.setAttribute('aria-expanded','true'); setTimeout(function(){ text && text.focus(); },50); track('concierge_opened'); }
+  function close(){ panel.hidden=true; launcher.hidden=false; launcher.setAttribute('aria-expanded','false'); }
+  launcher.addEventListener('click', open);
+  closeBtn.addEventListener('click', close);
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape' && !panel.hidden) close(); });
+
+  function track(ev, props){ props=props||{}; props.surface='cre';
+    try{ if(window.gtag) gtag('event',ev,props); }catch(e){}
+    try{ if(window.posthog) posthog.capture(ev,props); }catch(e){}
+  }
+  function add(role, textStr){
+    var d=document.createElement('div'); d.className='msg '+role; d.textContent=textStr;
+    log.appendChild(d); log.scrollTop=log.scrollHeight; return d;
+  }
+
+  // Degraded knowledge — used only if the concierge endpoint isn't reachable.
+  // Deliberately high-level and opacity-safe; anything deal-specific routes to a walkthrough.
+  var EMAIL_RE=/[^\s@]+@[^\s@]+\.[^\s@]+/;
+  function offlineAnswer(q){
+    var s=q.toLowerCase();
+    if(EMAIL_RE.test(q)){ track('walkthrough_request',{via:'concierge'});
+      return "Thank you — I've noted your email and someone will reach out to set up a walkthrough on your own deal. In the meantime, ask me anything about how it works."; }
+    if(/tie.?out|check|statement|cam|waterfall|audit/.test(s))
+      return "The tie-out re-computes the whole deal every month — the offering memo against actuals, the waterfall, CAM reconciliations, and every owner statement re-added from its own lines. It surfaces gaps nobody asked about, like a statement that doesn't foot or a tenant billed past their cap.";
+    if(/dispute|lawsuit|legal|law dog|allegation|litigation/.test(s))
+      return "Most real estate disputes are a division of holdings wearing legal paper. Law Dog holds the matter — claims, exhibits, discovery, deadlines — and pairs every allegation against what the record actually shows, reading from the same numbers the tie-out checks. If you're in one now, a walkthrough is the fastest way to see it on your matter.";
+    if(/price|cost|how much|pricing|fee/.test(s))
+      return "Pricing depends on the size and shape of the deal, so we set it during a walkthrough rather than a menu. Bring one deal and we'll show you exactly what it would cover.";
+    if(/walkthrough|demo|book|call|talk|schedule|meeting/.test(s)){ track('walkthrough_request',{via:'concierge'});
+      return "Happy to set that up. What's the best email to reach you? Bring one deal and we'll load it and run the tie-out — you'll know within a week whether your statements hold."; }
+    if(/ask|question|answer/.test(s))
+      return "Ask lets you question a deal in plain English and get an answer computed from the record itself, with the lines it came from — and when the record doesn't hold the answer, it says so instead of guessing.";
+    return "Good question — the honest answer depends on your specific deal, so I'd rather show you than guess. What's the best email to set up a walkthrough? Or ask me about the tie-out, the Deal Room, Ask, or Law Dog.";
+  }
+
+  function respond(q){
+    var typing=add('bot','…'); typing.classList.add('typing');
+    fetch('/api/concierge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,surface:'cre'})})
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(j){ typing.remove(); add('bot', (j && j.answer) ? j.answer : offlineAnswer(q)); })
+      .catch(function(){ typing.remove(); add('bot', offlineAnswer(q)); });
+  }
+
+  function submit(q){ q=(q||'').trim(); if(!q) return; add('you',q); track('concierge_message'); submit; respond(q); }
+  form.addEventListener('submit', function(e){ e.preventDefault(); var q=text.value; text.value=''; submit(q); });
+  chips.addEventListener('click', function(e){ var b=e.target.closest('.chip'); if(b) submit(b.getAttribute('data-q')); });
+})();
+</script>
+
+</body>
+</html>
