@@ -14,6 +14,10 @@ name: Claude Dispatch
 #   protection stays untouched; Actions can never approve or merge.
 # - Blocked runs push .dispatch/QUESTION.md on the branch; the callback opens a
 #   "QUESTION:" draft PR so a human can rule. Never stop empty-handed.
+# - MODEL PIN (D-MODELFAN-1, 2026-08-22): the orchestrator resolves the row's model_tier
+#   through model_routing at fire time and passes the api model string in `model`. Empty
+#   (the default) preserves the action's own default, so this input is order-safe: the
+#   workflow can ship before the firer sends it. Never hardcode a version string here.
 
 on:
   workflow_dispatch:
@@ -34,6 +38,11 @@ on:
         description: "Branch to check out and branch the work from (PR targets this)"
         required: false
         default: main
+        type: string
+      model:
+        description: "API model string resolved from model_routing at fire time. Empty = action default."
+        required: false
+        default: ""
         type: string
 
 # Least privilege: contents:write for the runner's push, id-token:write for the OIDC
@@ -84,7 +93,8 @@ jobs:
           base_branch: ${{ inputs.base_branch }}
           # Headless trusted runner: grant Claude its tools. The action's default sandbox
           # denies Bash/git/Write (permission_denials), which is why prior runs pushed nothing.
-          claude_args: "--dangerously-skip-permissions"
+          # MODEL PIN: --model appended only when the orchestrator supplied one.
+          claude_args: ${{ inputs.model != '' && format('--dangerously-skip-permissions --model {0}', inputs.model) || '--dangerously-skip-permissions' }}
           # The action exposes no branch output, so Claude does the git itself.
           prompt: |
             You are running headless in GitHub Actions on ${{ github.repository }} (base branch ${{ inputs.base_branch }}).
